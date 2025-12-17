@@ -19,7 +19,7 @@ from .config_manager import ConfigManager
 
 
 DATASET_URLS = {
-    "nsynth_test_subset": "https://storage.googleapis.com/magentadata/datasets/nsynth/nsynth-test.jsonwav.tar.gz",
+    "nsynth_test_subset": "http://download.magenta.tensorflow.org/datasets/nsynth/nsynth-test.jsonwav.tar.gz",
     "irmas_test_subset": "https://zenodo.org/record/1290750/files/IRMAS-TestingData-Part1.zip",
     "maestro_v301": "https://storage.googleapis.com/magentadata/datasets/maestro/MAESTRO-3.0.0.tar.gz",
 }
