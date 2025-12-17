@@ -1,9 +1,9 @@
-Citing PyToneAnalyzer
+Citing InstruReconstr
 
-If you are using PyToneAnalyzer in your research, please cite it as follows:
+If you are using InstruReconstr in your research, please cite it as follows:
 
-@software{PyToneAnalyzer,
-    title = {PyToneAnalyzer: Fourier Analysis of Musical Instruments},
+@software{InstruReconstr,
+    title = {InstruReconstr: Sparse Sinusoidal Reconstruction of Musical Instruments},
     author = {Duje Giljanović},
     year = {2024},
     url = {github.com/gilja/instruments_fourier_analysis},
