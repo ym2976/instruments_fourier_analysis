@@ -25,13 +25,21 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=[
+        "librosa>=0.10.0",
+        "matplotlib>=3.8.0",
+        "numpy>=1.23.0",
+        "requests>=2.31.0",
         "scipy>=1.11.4",
+        "soundfile>=0.12.1",
         "ipywidgets>=8.1.1",
         "plotly>=5.18.0",
         "sympy>=1.12",
         "kaleido>=0.2.1",
         "nbformat>=5.9.2",
     ],
+    extras_require={
+        "playback": ["sounddevice>=0.4.6", "simpleaudio>=1.0.4", "pyaudio>=0.2.13"],
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

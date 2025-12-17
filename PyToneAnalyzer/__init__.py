@@ -1,4 +1,10 @@
 from .config_manager import ConfigManager
+from . import datasets
+from . import evaluation
+from . import feature_extraction
+from . import harmonic_model
+from . import synthesis
+from . import visualization
 
 
 def initialize_config(config_path=None):

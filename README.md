@@ -95,6 +95,58 @@ Keep in mind that imported audio files are converted to lowercase and sorted alp
 
 &nbsp;
 
+## Extended workflow: datasets, spectral features, and interactive comparison
+
+PyToneAnalyzer now ships with an end-to-end toolkit for public music datasets (NSynth, IRMAS, MAESTRO), feature extraction with `librosa`, and sparse sinusoidal modeling to reconstruct instruments with a handful of partials.
+
+### 1) Prepare datasets
+```python
+from pathlib import Path
+from PyToneAnalyzer import datasets, ConfigManager
+
+cfg = ConfigManager.get_instance().config
+root = Path(cfg.PATH_DATASETS)
+nsynth_path = datasets.prepare_dataset("nsynth_test_subset")  # downloads + extracts
+audio_files = datasets.list_audio_files(nsynth_path)
+print(f"Found {len(audio_files)} audio files")
+```
+> Tip: to use a custom mirror, pass `url_override=` to `prepare_dataset`.
+
+### 2) Extract features and fit a sparse sinusoidal model
+```python
+import librosa
+from PyToneAnalyzer import feature_extraction, harmonic_model, evaluation
+
+path = audio_files[0]
+waveform, sr = feature_extraction.load_mono_audio(str(path), sample_rate=22050)
+features = feature_extraction.extract_features(waveform, sr)
+model = harmonic_model.fit_and_resynthesize(waveform, sr, n_partials=12)
+
+lsd, f0_rmse, conv = evaluation.compute_all_metrics(
+    waveform, model.reconstruction, features.f0_hz, features.f0_hz, sr
+)
+print(lsd, f0_rmse, conv)
+```
+
+### 3) Visualize differences between instruments
+```python
+from PyToneAnalyzer import visualization
+visualization.plot_waveform_and_spectrogram(waveform, sr, title="Original")
+visualization.plot_partials(model.partials_hz_amp, title="Top partials")
+```
+
+### 4) Interactive A/B comparison (command line)
+Run an analysis and reconstruction, export WAVs, and optionally play them (install extras with `pip install ".[playback]"` to enable playback):
+```bash
+python -m PyToneAnalyzer.interactive data/my_audio.wav --partials 12 --output-dir results/ab_test
+```
+Artifacts are stored in `config.PATH_INTERACTIVE_RESULTS` by default.
+
+### 5) Evaluation metrics
+The new `PyToneAnalyzer.evaluation` module provides Log-Spectral Distance, F0 RMSE, and spectral convergence for quantitative comparisons between original and reconstructed sounds.
+
+&nbsp;
+
 ## Custom configuration file
 
 Once you are ready to analyze your own audio files, you will need to create your own configuration file. To make this easier for you, the template has been provided to you in the ```examples``` directory.
@@ -231,4 +283,3 @@ If you are using PyToneAnalyzer in your research, please acknowledge it by citin
 ## License
 
 MIT
-

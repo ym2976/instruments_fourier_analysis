@@ -64,6 +64,8 @@ import os
 PACKAGE_INSTALLATION_PATH = os.path.dirname(os.path.abspath(__file__))
 PATH_BASE = os.path.expanduser("~")
 PATH_RESULTS = os.path.join(PATH_BASE, "PyToneAnalyzer_results", "analyzed")
+PATH_INTERACTIVE_RESULTS = os.path.join(PATH_BASE, "PyToneAnalyzer_results", "interactive")
+PATH_DATASETS = os.path.join(PATH_BASE, "PyToneAnalyzer_datasets")
 PATH_INSTRUMENT_SAMPLES = os.path.join(
     PACKAGE_INSTALLATION_PATH, "PyToneAnalyzer_data", "instrument_samples"
 )
