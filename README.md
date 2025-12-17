@@ -110,7 +110,9 @@ nsynth_path = datasets.prepare_dataset("nsynth_test_subset")  # downloads + extr
 audio_files = datasets.list_audio_files(nsynth_path)
 print(f"Found {len(audio_files)} audio files")
 ```
-> Tip: to use a custom mirror, pass `url_override=` to `prepare_dataset`.
+> Tips:
+> - If the default mirror returns 403/404, pass `url_override=` with your own link or point to a pre-downloaded archive using `local_archive=Path(".../nsynth-test.jsonwav.tar.gz")`.
+> - Archives are cached under `<PATH_DATASETS>/<dataset>/downloads` so repeated calls do not re-download.
 
 ### 2) Extract features and fit a sparse sinusoidal model
 ```python

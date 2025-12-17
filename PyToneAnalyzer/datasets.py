@@ -70,7 +70,12 @@ def _extract_archive(archive_path: Path, destination: Path):
         raise ValueError(f"Unsupported archive type for {archive_path}")
 
 
-def prepare_dataset(name: str, destination: Path | None = None, url_override: str | None = None) -> Path:
+def prepare_dataset(
+    name: str,
+    destination: Path | None = None,
+    url_override: str | None = None,
+    local_archive: Path | None = None,
+) -> Path:
     """
     Downloads and extracts a dataset archive into a dedicated folder.
 
@@ -78,6 +83,7 @@ def prepare_dataset(name: str, destination: Path | None = None, url_override: st
         name: Dataset key; one of DATASET_URLS keys or a custom label with url_override.
         destination: Optional destination folder; defaults to `<PATH_DATASETS>/<name>`.
         url_override: URL to download instead of the default DATASET_URLS entry.
+        local_archive: Optional path to a pre-downloaded archive; if provided, download is skipped.
 
     Returns:
         Path to the extracted dataset directory.
@@ -87,13 +93,38 @@ def prepare_dataset(name: str, destination: Path | None = None, url_override: st
     archive_dir = dest / "downloads"
     archive_dir.mkdir(parents=True, exist_ok=True)
 
-    url = url_override or DATASET_URLS.get(name)
-    if url is None:
-        raise ValueError(f"No URL provided for dataset '{name}'. Supply url_override to proceed.")
+    urls = []
+    if url_override:
+        urls = [url_override]
+    else:
+        mapped = DATASET_URLS.get(name)
+        if mapped is None:
+            raise ValueError(
+                f"No URL provided for dataset '{name}'. Supply url_override to proceed."
+            )
+        urls = mapped if isinstance(mapped, list) else [mapped]
 
-    archive_path = archive_dir / url.split("/")[-1]
-    if not archive_path.exists():
-        download_file(url, archive_path)
+    if local_archive:
+        archive_path = Path(local_archive)
+        if not archive_path.exists():
+            raise FileNotFoundError(f"local_archive not found: {archive_path}")
+    else:
+        # Use the filename from the first candidate URL.
+        archive_path = archive_dir / urls[0].split("/")[-1]
+        if not archive_path.exists():
+            last_error: Exception | None = None
+            for url in urls:
+                try:
+                    download_file(url, archive_path)
+                    last_error = None
+                    break
+                except Exception as exc:  # broad to capture HTTPError/Connection issues
+                    last_error = exc
+            if last_error:
+                raise RuntimeError(
+                    f"Failed to download dataset '{name}'. Tried URLs: {urls}. "
+                    "Provide url_override or local_archive pointing to a valid archive."
+                ) from last_error
 
     extracted_path = dest / "data"
     if not extracted_path.exists():
